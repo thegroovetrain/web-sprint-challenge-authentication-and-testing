@@ -80,6 +80,14 @@ describe('/api/jokes', () => {
         it('denies access to unauthenticated users', async () => {
             const res = await supertest(server).get('/api/jokes')
             expect(res.statusCode).toBe(401)
+            expect(res.body.message).toBe('You shall not pass!')
+        })
+        it('denies access to an incorrect web token', async () => {
+            const res = await supertest(server).get('/api/jokes').send({
+                token: 'wrong'
+            })
+            expect(res.statusCode).toBe(401)
+            expect(res.body.message).toBe('You shall not pass!')
         })
     })
 })
