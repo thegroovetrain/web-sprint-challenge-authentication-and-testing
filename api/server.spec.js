@@ -63,3 +63,23 @@ describe('/api/auth', () => {
         })
     })
 })
+
+describe('/api/jokes', () => {
+    describe('GET /', () => {
+        it('returns a dad joke to a logged in user', async () => {
+            const login_res = await supertest(server).post('/api/auth/login').send({
+                username: 'test',
+                password: 'poopsword'
+            })
+            const res = await supertest(server).get('/api/jokes').send({
+                token: login_res.body.token
+            })
+            expect(res.statusCode).toBe(200)
+            expect(res.headers['content-type']).toBe('application/json; charset=utf-8')
+        })
+        it('denies access to unauthenticated users', async () => {
+            const res = await supertest(server).get('/api/jokes')
+            expect(res.statusCode).toBe(401)
+        })
+    })
+})
